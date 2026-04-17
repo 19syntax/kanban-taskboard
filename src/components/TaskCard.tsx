@@ -5,7 +5,7 @@ interface TaskCardProps {
   task: Task;
 }
 
-const PriorityColors = {
+const priorityColors = {
   low: "bg-green-100 text-green-700",
   medium: "bg-yellow-100 text-yellow-700",
   high: "bg-red-100 text-red-700",
@@ -32,13 +32,12 @@ const TaskCard = ({ task }: TaskCardProps) => {
       )}
       <div className="flex items-center justify-between text-xs text-gray-500">
         <span
-          className={`px-2 py-1 rounded font-medium ${PriorityColors[task.priority]}`}
+          className={`px-2 py-1 rounded font-medium ${priorityColors[task.priority]}`}
         >
           {task.priority}
         </span>
+        {task.dueDate && <span>Due: {format(task.dueDate, "MMM d")}</span>}
       </div>
-
-      {task.dueDate && <span>Due: {format(task.dueDate, "MMM d")}</span>}
     </div>
   );
 };

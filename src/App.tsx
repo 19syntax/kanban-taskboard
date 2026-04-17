@@ -1,34 +1,15 @@
-import TaskCard from "./components/TaskCard";
-import type { Task } from "./types/Task";
+import KanbanBoard from "./components/KanbanBoard";
 
-const App = () => {
-  const testTask1: Task = {
-    id: "1",
-    title: "Fix navigation bug",
-    description: "The sidebar menu does not close on mobile devices",
-    priority: "high",
-    tags: ["frontend", "bug", "urgent"],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
-  };
-
-  const testTask2: Task = {
-    id: "2",
-    title: "Write unit tests",
-    priority: "medium",
-    tags: ["backend"],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    // No description, no due date
-  };
-
+export default function App() {
   return (
-    <>
-      <TaskCard task={testTask1} />
-      <TaskCard task={testTask2} />
-    </>
-  );
-};
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white border-b border-gray-200 p-6">
+        <h1 className="text-2xl font-bold text-gray-900">Task Manager</h1>
+      </header>
 
-export default App;
+      <main className="h-[calc(100vh-80px)]">
+        <KanbanBoard />
+      </main>
+    </div>
+  );
+}
