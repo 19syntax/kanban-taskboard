@@ -4,8 +4,9 @@ import TaskCard from "./TaskCard";
 
 interface TaskColumnProps {
   column: Column;
+  onDeleteTask: (taskId: string) => void;
 }
-const TaskColumn = ({ column }: TaskColumnProps) => {
+const TaskColumn = ({ column, onDeleteTask }: TaskColumnProps) => {
   return (
     <div className="shrink-0 w-80 bg-gray-100 rounded-lg p-4 mb-4">
       <div className="flex items-center justify-between mb-4">
@@ -16,7 +17,7 @@ const TaskColumn = ({ column }: TaskColumnProps) => {
       </div>
       <div className="space-y-3">
         {column.tasks.map((task) => (
-          <TaskCard task={task} key={task.id} />
+          <TaskCard task={task} key={task.id} onDeleteTask={onDeleteTask} />
         ))}
       </div>
       <button className="w-full mt-4 p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-gray-400 hover:text-gray-600 transition-colors">

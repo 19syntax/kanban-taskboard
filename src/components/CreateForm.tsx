@@ -103,6 +103,23 @@ export default function CreateForm({ onSubmit, onClose }: CreateFormProps) {
         </div>
         <div>
           <label
+            htmlFor="status"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Status
+          </label>
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value as TaskStatus)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="todo">To do</option>
+            <option value="in-progress">In Progress</option>
+            <option value="done">Done</option>
+          </select>
+        </div>
+        <div>
+          <label
             htmlFor="priority"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
@@ -146,7 +163,7 @@ export default function CreateForm({ onSubmit, onClose }: CreateFormProps) {
           </button>
           <button
             type="submit"
-            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            className="px-4 py-2 text-white bg-blue-700 rounded-lg hover:bg-gray-200 transition-colors"
           >
             Create Task
           </button>

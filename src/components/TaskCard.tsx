@@ -3,6 +3,7 @@ import { format } from "date-fns";
 
 interface TaskCardProps {
   task: Task;
+  onDeleteTask?: (taskId: string) => void;
 }
 
 const priorityColors = {
@@ -11,10 +12,36 @@ const priorityColors = {
   high: "bg-red-100 text-red-700",
 };
 
-const TaskCard = ({ task }: TaskCardProps) => {
+const TaskCard = ({ task, onDeleteTask }: TaskCardProps) => {
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer">
-      <h3 className="font-semibold text-gray-900 mb-2">{task.title}</h3>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="font-semibold text-gray-900">{task.title}</h3>
+        {onDeleteTask && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDeleteTask(task.id);
+            }}
+            className="text-gray-400 hover:text-red-500 transition-colors ml-2"
+            aria-label="Delete task"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        )}
+      </div>
       {task.description && (
         <p className="text-sm text-gray-600 mb-3">{task.description}</p>
       )}
