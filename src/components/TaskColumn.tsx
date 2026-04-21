@@ -1,12 +1,13 @@
-import type { Column } from "../types/Task";
+import type { Column, Task } from "../types/Task";
 import TaskCard from "./TaskCard";
 // import TaskCard from "./TaskCard";
 
 interface TaskColumnProps {
   column: Column;
   onDeleteTask: (taskId: string) => void;
+  onEditTask: (task: Task) => void;
 }
-const TaskColumn = ({ column, onDeleteTask }: TaskColumnProps) => {
+const TaskColumn = ({ column, onDeleteTask, onEditTask }: TaskColumnProps) => {
   return (
     <div className="shrink-0 w-80 bg-gray-100 rounded-lg p-4 mb-4">
       <div className="flex items-center justify-between mb-4">
@@ -17,7 +18,12 @@ const TaskColumn = ({ column, onDeleteTask }: TaskColumnProps) => {
       </div>
       <div className="space-y-3">
         {column.tasks.map((task) => (
-          <TaskCard task={task} key={task.id} onDeleteTask={onDeleteTask} />
+          <TaskCard
+            task={task}
+            key={task.id}
+            onDeleteTask={onDeleteTask}
+            onEditTask={onEditTask}
+          />
         ))}
       </div>
       <button className="w-full mt-4 p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-gray-400 hover:text-gray-600 transition-colors">

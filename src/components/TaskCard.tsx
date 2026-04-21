@@ -4,6 +4,7 @@ import { format } from "date-fns";
 interface TaskCardProps {
   task: Task;
   onDeleteTask?: (taskId: string) => void;
+  onEditTask?: (task: Task) => void;
 }
 
 const priorityColors = {
@@ -12,9 +13,12 @@ const priorityColors = {
   high: "bg-red-100 text-red-700",
 };
 
-const TaskCard = ({ task, onDeleteTask }: TaskCardProps) => {
+const TaskCard = ({ task, onDeleteTask, onEditTask }: TaskCardProps) => {
   return (
-    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer">
+    <div
+      onClick={() => onEditTask?.(task)}
+      className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
+    >
       <div className="flex justify-between items-center mb-4">
         <h3 className="font-semibold text-gray-900">{task.title}</h3>
         {onDeleteTask && (
