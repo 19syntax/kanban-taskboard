@@ -1,18 +1,38 @@
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Column, Task, TaskInput } from "../types/Task";
 import { mockTasks } from "../data/MockData";
 import TaskColumn from "./TaskColumn";
 import Modal from "./Modal";
 import CreateForm from "./CreateForm";
 import EditTaskForm from "./EditTaskForm";
+import useLocalStorage from "../hooks/useLocalStorage";
+import useToggle from "../hooks/useToggle";
+import usePrevious from "../hooks/usePrevious";
 
 const KanbanBoard = () => {
-  const [tasks, setTasks] = useState<Task[]>(mockTasks);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [tasks, setTasks] = useLocalStorage<Task[]>("kanban-tasks", mockTasks);
+  const [isCreateModalOpen, toggleCreateModal] = useToggle(false);
+  const [isEditModalOpen, toggleEditModal] = useToggle(false);
   const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
+  const prevTaskCount = usePrevious(tasks.length);
+  const [newestTaskId, setNewestTaskId] = useState<string | null>(null);
 
-  const handleUpdateTask = (taskId: string, updates: TaskInput) => {
+  useEffect(() => {
+    if (newestTaskId) {
+      const timer = setTimeout(() => {
+        setNewestTaskId(null);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [newestTaskId]);
+
+  useEffect(() => {
+    if (prevTaskCount !== undefined && prevTaskCount !== tasks.length) {
+      console.log(`Task changes from ${prevTaskCount} to ${tasks.length}`);
+    }
+  }, [tasks.length, prevTaskCount]);
+
+  const handleUpdateTask = useCallback((taskId: string, updates: TaskInput) => {
     setTasks(
       tasks.map((task) =>
         task.id === taskId
@@ -20,49 +40,59 @@ const KanbanBoard = () => {
           : task,
       ),
     );
-  };
-  const handleCreateTask = (taskInput: TaskInput) => {
-    const newTask: Task = {
-      ...taskInput,
-      id: `task-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    setTasks([...tasks, newTask]);
-  };
+  }, []);
+  const handleCreateTask = useCallback(
+    (taskInput: TaskInput) => {
+      const newTask: Task = {
+        ...taskInput,
+        id: `task-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      setTasks((prevTasks) => [...prevTasks, newTask]);
+      setNewestTaskId(newTask.id);
+    },
+    [setTasks],
+  );
 
-  const handleDeleteTask = (taskId: string) => {
-    if (window.confirm("Are you sure you want to delete this tasks")) {
-      setTasks(tasks.filter((task) => task.id !== taskId));
-    }
-  };
-  const handleEditClick = (task: Task) => {
+  const handleDeleteTask = useCallback(
+    (taskId: string) => {
+      if (window.confirm("Are you sure you want to delete this tasks")) {
+        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+      }
+    },
+    [setTasks],
+  );
+
+  const handleEditClick = useCallback((task: Task) => {
     setTaskToEdit(task);
-    setIsEditModalOpen(true);
-  };
+    toggleEditModal();
+  }, []);
 
-  const columns: Column[] = [
-    {
-      id: "todo",
-      title: "To Do",
-      tasks: tasks.filter((task) => task.status === "todo"),
-    },
-    {
-      id: "in-progress",
-      title: "In Progress",
-      tasks: tasks.filter((task) => task.status === "in-progress"),
-    },
-    {
-      id: "done",
-      title: "Done",
-      tasks: tasks.filter((task) => task.status === "done"),
-    },
-  ];
+  const columns = useMemo((): Column[] => {
+    return [
+      {
+        id: "todo",
+        title: "To Do",
+        tasks: tasks.filter((task) => task.status === "todo"),
+      },
+      {
+        id: "in-progress",
+        title: "In Progress",
+        tasks: tasks.filter((task) => task.status === "in-progress"),
+      },
+      {
+        id: "done",
+        title: "Done",
+        tasks: tasks.filter((task) => task.status === "done"),
+      },
+    ];
+  }, [tasks]);
   return (
     <>
       <div className="p-6">
         <button
-          onClick={() => setIsCreateModalOpen(true)}
+          onClick={toggleCreateModal}
           className="mb-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
         >
           + New Task
@@ -74,25 +104,26 @@ const KanbanBoard = () => {
               column={col}
               onDeleteTask={handleDeleteTask}
               onEditTask={handleEditClick}
+              newestTaskId={newestTaskId}
             />
           ))}
         </div>
       </div>
       <Modal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={() => toggleCreateModal()}
         title="Create New Task"
       >
         <CreateForm
           onSubmit={handleCreateTask}
-          onClose={() => setIsCreateModalOpen(false)}
+          onClose={() => toggleCreateModal()}
         />
       </Modal>
       {taskToEdit && (
         <Modal
           isOpen={isEditModalOpen}
           onClose={() => {
-            setIsEditModalOpen(false);
+            toggleEditModal();
             setTaskToEdit(null);
           }}
           title="Edit Task"
@@ -101,7 +132,7 @@ const KanbanBoard = () => {
             task={taskToEdit}
             onUpdate={handleUpdateTask}
             onClose={() => {
-              setIsEditModalOpen(false);
+              toggleEditModal();
               setTaskToEdit(null);
             }}
           />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { TaskInput, TaskPriority, TaskStatus } from "../types/Task";
 
 interface CreateFormProps {
@@ -12,6 +12,11 @@ export default function CreateForm({ onSubmit, onClose }: CreateFormProps) {
   const [status, setStatus] = useState<TaskStatus>("todo");
   const [tags, setTags] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const inputTitleRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputTitleRef.current?.focus();
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,6 +65,7 @@ export default function CreateForm({ onSubmit, onClose }: CreateFormProps) {
           <input
             id="title"
             type="text"
+            ref={inputTitleRef}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

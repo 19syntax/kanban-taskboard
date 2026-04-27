@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Task, TaskInput, TaskPriority, TaskStatus } from "../types/Task";
 
 interface EditTaskFormProps {
@@ -17,8 +17,13 @@ export default function EditTaskForm({
   const [status, setStatus] = useState<TaskStatus>(task.status);
   const [tags, setTags] = useState(task.tags.join(", "));
   const [dueDate, setDueDate] = useState(
-    task.dueDate ? task.dueDate.toISOString().split("T")[0] : "",
+    task.dueDate ? new Date(task.dueDate).toISOString().split("T")[0] : "",
   );
+  const inputTitleRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputTitleRef.current?.focus();
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,6 +65,7 @@ export default function EditTaskForm({
           <input
             id="title"
             type="text"
+            ref={inputTitleRef}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

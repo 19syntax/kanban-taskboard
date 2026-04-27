@@ -1,3 +1,4 @@
+import React, { useEffect, useRef } from "react";
 import type { Column, Task } from "../types/Task";
 import TaskCard from "./TaskCard";
 // import TaskCard from "./TaskCard";
@@ -6,8 +7,22 @@ interface TaskColumnProps {
   column: Column;
   onDeleteTask: (taskId: string) => void;
   onEditTask: (task: Task) => void;
+  newestTaskId?: string | null;
 }
-const TaskColumn = ({ column, onDeleteTask, onEditTask }: TaskColumnProps) => {
+const TaskColumn = ({
+  column,
+  onDeleteTask,
+  onEditTask,
+  newestTaskId,
+}: TaskColumnProps) => {
+  const taskRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+
+  useEffect(() => {
+    if (newestTaskId && taskRefs.current.has(newestTaskId)) {
+      const element = taskRefs.current.get(newestTaskId);
+      element?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [newestTaskId]);
   return (
     <div className="shrink-0 w-80 bg-gray-100 rounded-lg p-4 mb-4">
       <div className="flex items-center justify-between mb-4">
@@ -21,6 +36,13 @@ const TaskColumn = ({ column, onDeleteTask, onEditTask }: TaskColumnProps) => {
           <TaskCard
             task={task}
             key={task.id}
+            ref={(el) => {
+              if (el) {
+                taskRefs.current.set(task.id, el);
+              } else {
+                taskRefs.current.delete(task.id);
+              }
+            }}
             onDeleteTask={onDeleteTask}
             onEditTask={onEditTask}
           />
@@ -33,4 +55,4 @@ const TaskColumn = ({ column, onDeleteTask, onEditTask }: TaskColumnProps) => {
   );
 };
 
-export default TaskColumn;
+export default React.memo(TaskColumn);
