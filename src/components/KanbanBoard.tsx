@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Column, Task, TaskInput } from "../types/Task";
 import { mockTasks } from "../data/MockData";
 import TaskColumn from "./TaskColumn";
@@ -8,6 +8,7 @@ import EditTaskForm from "./EditTaskForm";
 import useLocalStorage from "../hooks/useLocalStorage";
 import useToggle from "../hooks/useToggle";
 import usePrevious from "../hooks/usePrevious";
+import { useTheme } from "../contexts/ThemeContext";
 
 const KanbanBoard = () => {
   const [tasks, setTasks] = useLocalStorage<Task[]>("kanban-tasks", mockTasks);
@@ -16,6 +17,7 @@ const KanbanBoard = () => {
   const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
   const prevTaskCount = usePrevious(tasks.length);
   const [newestTaskId, setNewestTaskId] = useState<string | null>(null);
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
     if (newestTaskId) {
@@ -90,7 +92,7 @@ const KanbanBoard = () => {
   }, [tasks]);
   return (
     <>
-      <div className="p-6">
+      <div className={`p-6 ${isDarkMode ? "bg-gray-900" : "bg-gray-50"}`}>
         <button
           onClick={toggleCreateModal}
           className="mb-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"

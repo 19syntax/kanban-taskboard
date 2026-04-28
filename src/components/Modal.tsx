@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTheme } from "../contexts/ThemeContext";
 
 interface ModalProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ export default function Modal({
   children,
   title,
 }: ModalProps) {
+  const { isDarkMode } = useTheme();
   if (!isOpen) return null;
 
   useEffect(() => {
@@ -37,16 +39,28 @@ export default function Modal({
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg p-6 max-w-lg w-full mx-4 shadow-xl"
+        className={`rounded-lg p-6 max-w-lg w-full mx-4 shadow-xl ${
+          isDarkMode ? "bg-gray-800" : "bg-white"
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
           {title && (
-            <h2 className="text-xl font-bold text-gray-900">{title}</h2>
+            <h2
+              className={`text-xl font-bold ${
+                isDarkMode ? "text-white" : "text-gray-900"
+              }`}
+            >
+              {title}
+            </h2>
           )}
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className={`transition-colors ${
+              isDarkMode
+                ? "text-gray-400 hover:text-gray-200"
+                : "text-gray-400 hover:text-gray-600"
+            }`}
           >
             <svg
               className="w-6 h-6"
